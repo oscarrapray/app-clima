@@ -3,6 +3,7 @@ import Formulario from './components/Formulario';
 import MainHeader from './components/MainHeader';
 import Clima from './components/Clima';
 import Error from './components/Error';
+import Axios from 'axios'
 
 const App = () => {
       // state del formulario
@@ -16,30 +17,20 @@ const App = () => {
   
     const { ciudad, pais } = busqueda;
   
-    useEffect(() => {
-      const consultarAPI = async () => {
-  
-          if(consultar) {
-            const appId = '144049dbdfd69c358d59c6004d181811';
-            const url = `http://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appId}`;
-    
-            const respuesta = await fetch(url);
-            const resultado = await respuesta.json();
-    
-            guardarResultado(resultado);
-            guardarConsultar(false);
-  
-            // Detecta si hubo resultados correctos en la consulta
-  
-            if(resultado.cod === "404") {
-                guardarError(true);
-            } else {
-                guardarError(false);
-            }
-          }
-          
+    useEffect( () =>{
+      if(consultar){
+        const appId = '144049dbdfd69c358d59c6004d181811';
+        Axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appId}`)
+              .then(resp => guardarResultado(resp.data))
       }
-      consultarAPI();
+          guardarResultado(resultado);
+          guardarConsultar(false);
+          // Detecta si hubo resultados correctos en la consulta
+          if(resultado.cod === "404") {
+              guardarError(true);
+          } else {
+              guardarError(false);
+          }
       // eslint-disable-next-line
     },[consultar]);
   
